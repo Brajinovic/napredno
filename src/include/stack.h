@@ -31,11 +31,17 @@ struct stack* initialize(void);
 // @ returns FAIL if not
 int push(struct transaction* transaction, struct stack* stack);
 
-// get the transaction from the top
-// set the top transaction to the second to last one
+// get a pointer to the transaction from the top and delete it from the stack
+// set the top transaction to the second to last one by decrementing the 
+// stack->top counter value
 // @ returns struct transaction* if successful
 // @ returns FAIL if not
 struct transaction* pop(struct stack*);
+
+// get a pointer to the transaction from the top
+// @ returns struct transaction* if successful
+// @ return FAIL if not
+struct transaction* peek(struct stack*);
 
 // check if the stack is empty
 // @ returns SUCCESS if stack is empty
@@ -46,6 +52,9 @@ int isEmpty(struct stack* stack);
 // @ returns SUCCESS if stack is full
 // @ returns FAIL if not
 int isFull(struct stack* stack);
+
+// print transaction
+void printTransaction(struct transaction* transaction);
 
 // print all contents of the stack
 void printContent(struct stack*);

@@ -25,7 +25,18 @@ struct stack* initialize(void)
 
 int push(struct transaction* transaction, struct stack* stack)
 {
-	if (stack->top <= stack->max_size)
+	if (stack == NULL)
+	{
+		printf("Stack not allocated!");
+		return FAIL;
+	}
+
+	if (transaction == NULL)
+	{
+		printf("Transaction not allocated!");
+		return FAIL;
+	}
+	if (isFull(stack) == FAIL)
 	{
 		// increment the top object counter
 		stack->top = stack->top + 1;
@@ -42,9 +53,16 @@ int push(struct transaction* transaction, struct stack* stack)
 
 struct transaction* pop(struct stack* stack)
 {
-	if (stack->top >= 0)
+	if (stack == NULL)
+	{
+		printf("Stack not allocated!");
+		return FAIL;
+	}
+	if (isEmpty(stack) == FAIL)
 	{	
-
+		// I am not deleting the last element, just decrementing the counter
+		// the next new transation is going to be written in the place of the 
+		// now poped transaction and in that way it is going to be deleted
 		stack->top = stack->top - 1;
 		return stack->transaction_history[stack->top + 1];
 	} else
@@ -56,8 +74,28 @@ struct transaction* pop(struct stack* stack)
 	}
 }
 
+struct transaction* peek(struct stack* stack)
+{
+	if (stack != NULL)
+	{
+		if (stack->transaction_history != NULL)
+			{
+				// return the pointer to the last transation
+				return stack->transaction_history[stack->top];
+			}
+	}
+	
+	return FAIL;
+}
+
 int isEmpty(struct stack* stack)
 {
+	if (stack == NULL)
+	{
+		printf("Stack not allocated!");
+		return FAIL;
+	}
+
 	if (stack->top <= -1)
 	{
 		return SUCCESS;
@@ -69,6 +107,11 @@ int isEmpty(struct stack* stack)
 
 int isFull(struct stack* stack)
 {
+	if (stack == NULL)
+	{
+		printf("Stack not allocated!");
+		return FAIL;
+	}
 	if (stack->top >= stack->max_size)
 	{
 		return SUCCESS;
@@ -78,8 +121,24 @@ int isFull(struct stack* stack)
 	}
 }
 
+
+void printTransaction(struct transaction* transaction)
+{
+	printf("\t Total: %f", transaction->total);
+	printf("\t Category: %d", transaction->category);
+	printf("\t Day: %d", transaction->day);
+	printf("\t Month: %d", transaction->month);
+	printf("\t Description: %s\n\n"	, transaction->description);
+}
+
+
 void printContent(struct stack* stack)
 {
+	if (stack == NULL)
+	{
+		printf("Stack not allocated!");
+		return FAIL;
+	}
 	if (isEmpty(stack) == SUCCESS)
 	{
 		printf("Stack is empty! Nothing to do!");
@@ -88,13 +147,9 @@ void printContent(struct stack* stack)
 		int index = 0;
 		while (index <= stack->top)
 		{
-			printf("Transaction: %d\n", index);
-			printf("\t Total: %f", stack->transaction_history[index]->total);
-			printf("\t Category: %d", stack->transaction_history[index]->category);
-			printf("\t Day: %d", stack->transaction_history[index]->day);
-			printf("\t Month: %d", stack->transaction_history[index]->month);
-			printf("\t Description: %s", stack->transaction_history[index]->description);
-			
+			printf("Transaction: %d\n", index + 1);
+			printTransaction(stack->transaction_history[index]);
+			index = index + 1;
 		}
 	}
 }

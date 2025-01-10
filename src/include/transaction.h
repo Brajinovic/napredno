@@ -24,6 +24,5 @@ struct transaction
 	char description[50];
 };
 
-int init_transaction(struct transaction* transaction);
 
 #endif
