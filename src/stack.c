@@ -153,3 +153,29 @@ void printContent(struct stack* stack)
 		}
 	}
 }
+
+void printContentByCategory(struct stack* stack, int category)
+{
+	if (stack == NULL)
+	{
+		printf("Stack not allocated!");
+		return FAIL;
+	}
+	if (isEmpty(stack) == SUCCESS)
+	{
+		printf("Stack is empty! Nothing to do!");
+	} else
+	{
+		int index = 0;
+		while (index <= stack->top)
+		{
+			if ( stack->transaction_history[index]->category == category)
+			{
+				printf("Transaction: %d\n", index + 1);
+				printTransaction(stack->transaction_history[index]);
+				
+			}
+			index = index + 1;
+		}
+	}
+}
