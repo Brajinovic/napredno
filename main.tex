@@ -25,7 +25,7 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
 	\newpage
 	\pagenumbering{arabic}
   \section{Uvod}
-  U sklopu kolegija \textit{Napredno programiranje}, je zadan zadatak \textit{Implementacije sustava za praćenje osobnih financija}. Izgled programa, zatjevi funkcionalnosti te implementacije su od samog početka zadani. U nastavku će biti objašnjene zaglavne datoteke i glavni program.
+  U sklopu kolegija \textit{Napredno programiranje}, je zadan zadatak \textit{Implementacije sustava za praćenje osobnih financija}. Izgled programa, zahtjevi funkcionalnosti te implementacije su od samog početka zadani. U nastavku će biti objašnjene zaglavne datoteke i glavni program.
 
 	\section{Datotečna struktura}
 	Datotečna struktura projekta izgleda ovako:
@@ -51,10 +51,10 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
   .1 images.
   }
 
-  Za prevođenje i pokretanje programa, kreiranje dinamičke biblioteke te generiranje pdf dokumentacije se koristi Makefile datoteka.
-  Programski kod i zaglavne datoteke se nalaze u \textit{src} i \textit{src\_dynamic} direktoriima.
-  Izvršni program se nalazi u \textit{bin} i \textit{bin\_dynamic} direkotriima.
-  Direktoriji \textit{src} i \textit{src\_dynamic} su identični. Razlika je u tome što \textit{src} sadržava datoteku \textit{stack.c} dok ne ista u direktoriju \textit{src\_dynamic} uklonjenja kako se koristi dinamička biblioteka \textit{libstack.so}. Isto se odnosi i na \textit{bin} i \textit{bin\_dynamic}.
+  Za prevođenje i pokretanje programa, kreiranje dinamičke biblioteke te generiranje PDF dokumentacije se koristi Makefile datoteka.
+  Programski kod i zaglavne datoteke se nalaze u \textit{src} i \textit{src\_dynamic} direktorijima.
+  Izvršni program se nalazi u \textit{bin} i \textit{bin\_dynamic} direktorijima.
+  Direktoriji \textit{src} i \textit{src\_dynamic} su identični. Razlika je u tome što \textit{src} sadržava datoteku \textit{stack.c} dok ne ista u direktoriju \textit{src\_dynamic} uklonjena kako se koristi dinamička biblioteka \textit{libstack.so}. Isto se odnosi i na \textit{bin} i \textit{bin\_dynamic}.
 
 \section{Direktorij src}
 		
@@ -64,7 +64,7 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
     \item stack.h
     \item transaction.h
   \end{itemize}
-  Izlistaj navedenih zaglavnih datoteka slijedi u nastavku. Datoteke neće bit pojašnjavanje kako su komentari sami po sebi obavili taj posao. Uvijetno uključivanje datoteke i ostale predprocesorske varijable neće biti prikazane.
+  Izlistaj navedenih zaglavnih datoteka slijedi u nastavku. Datoteke neće biti pojašnjavanje kako su komentari sami po sebi obavili taj posao. Uvjetno uključivanje datoteke i ostale pretprocesorske varijable neće biti prikazane.
   \subsubsection{transaction.h}
   \begin{minted}[fontsize=\tiny]{c}
   enum transaction_category
@@ -156,8 +156,7 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
     Ova funkcija služi za ispis početke poruke prilikom prvog pokretanja programa. Kao i funkcija \textit{printMenu()}, ne sadrži nikakvu posebnu logiku te neće biti detaljnije opisivana.
 
   \subsubsection{main()}
-    Glavna funkcija programa. U nastavku slijede manji dijelovi koda od kojih će svaki biti pojašnjen.
-    \begin{minted}[fontsize=\tiny]{c}
+     \begin{minted}[fontsize=\tiny]{c}
 
     // structure elements
     float total;
@@ -186,7 +185,7 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
       return FAIL;
     }   
     \end{minted}
-    Početni dio koda koji sadrži deklaracije i definicije varijabli koje će biti korištene tijekom rada programa. Ovdje možemo odmah vidjeti varijable namjenjene za popunjavanje strukture transakcija kao i varijablu \textit{stack} koja predstavlja strukturu podataka koju smo implementirali u projektu. Pored njih, imamo i dvije varijable koje koristimo za pohranu korisničkog unosa, bilo u svrhu navigacije izbornikom ili općenito. Dodatno, za svaki slučaj dinamičke alokacije memorije, provjerava se uspješnost te radnje.
+    Početni dio koda koji sadrži deklaracije i definicije varijabli koje će biti korištene tijekom rada programa. Ovdje možemo odmah vidjeti varijable namijenjene za popunjavanje strukture transakcija kao i varijablu \textit{stack} koja predstavlja strukturu podataka koju smo implementirali u projektu. Pored njih, imamo i dvije varijable koje koristimo za pohranu korisničkog unosa, bilo u svrhu navigacije izbornikom ili općenito. Dodatno, za svaki slučaj dinamičke alokacije memorije, provjerava se uspješnost te radnje.
 
 
   \begin{minted}[fontsize=\tiny]{c}
@@ -206,8 +205,7 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
   }
   #endif
   \end{minted}
-  Kao pomoć u ispitivanju rada programa su ručno napravljenje transakcije (njih 10) od kojih je samo jedna prikazana kako bi zadržali preglednost čitavog dokumenta. Ostalih 9 izgleda potpuno isto tako da nema potrebe da se sve prikazuju. Nakon što su transakcije kreirane, dodane su na stog pomoću funkcije \textit{push}. Ove ispitne transakcije se mogu isključiti iz programa tako da se unutar zaglavne datoteke \textit{stack.h} vrijednosti konstante \textit{DEBUG} postavi u 0 (nula).
-
+  Kao pomoć u ispitivanju rada programa su ručno napravljene transakcije (njih 10) od kojih je samo jedna prikazana kako bi zadržali preglednost čitavog dokumenta. Ostalih 9 izgleda potpuno isto tako da nema potrebe da se sve prikazuju. Nakon što su transakcije kreirane, dodane su na stog pomoću funkcije \textit{push}. Ove ispitne transakcije se mogu isključiti iz programa tako da se unutar zaglavne datoteke \textit{stack.h} vrijednosti konstante \textit{DEBUG} postavi u 0 (nula).
 
   \begin{minted}[fontsize=\tiny]{c}
   printWelcomeScreen();
@@ -226,7 +224,7 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
   // if the input is outside of the allowed range, repeat the entry
   } while (!(menu_index[0] >= 48 && (menu_index[0] <= 55) || (menu_index[0] == 99)));
   \end{minted}
-  Generična funkcija korisničkog unosa podataka. Svaka od nih ima neku poruku na početku koja korisnika navodi na očekivani unos. Nakon toga se obrađuje korisnički unos na način da se miču neželjeni znakovi ili se unos koji je znak pretvara u broj (cijeli ili decimalan) pomoću funkcija \textit{atoi} i \textit{atof}. U ovom primjeru te dvije funkcije nisu korištene kako je moguće na osnovu ovog primjera iz koda zaključiti kako se radi o korisničkom unosu. Na kraju vidimo određene uvijete kojima zapravo zadajemo dozvoljeni korisnički unos.
+  Generična funkcija korisničkog unosa podataka. Svaka od njih ima neku poruku na početku koja korisnika navodi na očekivani unos. Nakon toga se obrađuje korisnički unos tako da se miču neželjeni znakovi ili se unos koji je znak pretvara u broj (cijeli ili decimalan) s pomoću funkcija \textit{atoi} i \textit{atof}. U ovom primjeru te dvije funkcije nisu korištene kako je moguće na osnovu ovog primjera iz koda zaključiti kako se radi o korisničkom unosu. Na kraju vidimo određene uvijete kojima zapravo zadajemo dozvoljeni korisnički unos.
   
 
   \begin{minted}[fontsize=\tiny]{c}
@@ -258,8 +256,8 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
     pop(stack);
   }
   \end{minted}
-  U slučaju kada je korisnik unio 1 (jedan), zadnja unešena struktura se briše i miče sa stoga.
-  
+U slučaju kada je korisnik unio 1 (jedan), zadnja unesena struktura se briše i miče sa stoga.
+
   \begin{minted}[fontsize=\tiny]{c}
   else if (menu_index[0] == '2')
   {
@@ -267,7 +265,7 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
     printTransaction(peek(stack));
   }  
   \end{minted}
-  U slučaju da je korisnik unio 2 (dva), ispisuje se sadržaj zadnje unešene strukture.
+  U slučaju da je korisnik unio 2 (dva), ispisuje se sadržaj zadnje unesene strukture.
 
 
   \begin{minted}[fontsize=\tiny]{c}
@@ -304,7 +302,7 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
 
   }
   \end{minted}
-  U slučaju da je korisnik unio 4 (četri), transakcije se ispisuju obzirom na pripadajuću kategoriju. Funkcija \textit{printContentByCategoriy} sadrži kod u kojem se prolazi kroz sve transakcije čiji pokazivači se nalaze na stogu. Za svaku transakciju se provjerava da li pripadata odabranoj kategoriji, te ukoliko pripada, sadržaj transakcije se ispisuje.
+  U slučaju da je korisnik unio 4 (četiri), transakcije se ispisuju s obzirom na pripadajuću kategoriju. Funkcija \textit{printContentByCategoriy} sadrži kod u kojem se prolazi kroz sve transakcije čiji pokazivači se nalaze na stogu. Za svaku transakciju se provjerava da li pripada ta odabranoj kategoriji, te ako pripada, sadržaj transakcije se ispisuje.
   
 
   \begin{minted}[fontsize=\tiny]{c}
@@ -363,7 +361,7 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
     // calculate the sum of costs for each category
   }
   \end{minted}
-  U slučaju da je korisnik unio 5 (pet), vrši se mjesečni obračun po kategorijama za odabrani mjesec. Prolazi se kroz svaku od transakcija te se gleda pripada li odabranom mjesecu. Ukoliko pripada, brojač za pripadajuću kategoriju se uvećava za iznos transakcije. Na kraju slijedi ispis svih brojača.
+  U slučaju da je korisnik unio 5 (pet), vrši se mjesečni obračun po kategorijama za odabrani mjesec. Prolazi se kroz svaku od transakcija te se gleda pripada li odabranom mjesecu. Ako pripada, brojač za pripadajuću kategoriju se uvećava za iznos transakcije. Na kraju slijedi ispis svih brojača.
 
 
   \begin{minted}[fontsize=\tiny]{c}
@@ -454,7 +452,7 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
     }
   }   
   \end{minted}
-  U slučaju da je korisnik unio 6 (šest), ispisuju se transakcije obzirom na dan i/ili mjesec stvaranja. Ukoliko se unese 0 (nula), transakcije se ispisuju obzirom na dan koji je unešen (ponovo novi unos, prvo korisnik unese 6, pa 0, pa sad dan). Ukoliko se unese 1 (jedan), transakcije se ispisuju obzirom na dan i mjesec koji je unešen.
+  U slučaju da je korisnik unio 6 (šest), ispisuju se transakcije s obzirom na dan i/ili mjesec stvaranja. Ako se unese 0 (nula), transakcije se ispisuju s obzirom na dan koji je unesen (ponovo novi unos, prvo korisnik unese 6, pa 0, pa sad dan). Ako se unese 1 (jedan), transakcije se ispisuju s obzirom na dan i mjesec koji je unesen.
   
 
   \begin{minted}[fontsize=\tiny]{c}
@@ -463,7 +461,7 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
     break;
   } 
   \end{minted}
-  U slučaju da korisnik unese 7 (sedam), program prekida sa radom.
+  U slučaju da korisnik unese 7 (sedam), program prekida s radom.
 
   \begin{minted}[fontsize=\tiny]{c}
   else if (menu_index[0] == 'c')
@@ -472,7 +470,7 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
     printMenu();
   }
   \end{minted}
-  U slučaju da korisnik unese c (slovo c), ispisujese se izbornik.
+  U slučaju da korisnik unese c (slovo c), ispisuje se izbornik.
 
   \begin{minted}[fontsize=\tiny]{c}
   printf("To show the menu, press \"c\".\n");
@@ -490,7 +488,7 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
   make compile
   \end{minted}
 
-  Za prevođenje i pokretanje programa sa dinamičkom bibliotekom: 
+  Za prevođenje i pokretanje programa s dinamičkom bibliotekom: 
   \begin{minted}[fontsize=\tiny]{shell}
   make dynamic_lib # stvaranje dinamičke biblioteke
   export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH # zapiši putanju do biblioteke u varijablu okruženja
