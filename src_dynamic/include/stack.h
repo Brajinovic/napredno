@@ -5,7 +5,7 @@
 #define FAIL 0
 
 #define DEBUG 1
-
+#define EXTENDED 1
 
 #define STACK_SIZE 100
 
@@ -56,16 +56,13 @@ int isEmpty(struct stack* stack);
 // @ returns FAIL if not
 int isFull(struct stack* stack);
 
-// prints transaction
+
+void printContentByCategory(struct stack* stack, int category);
+// print transaction
 void printTransaction(struct transaction* transaction);
 
 // print all contents of the stack
 void printContent(struct stack*);
-
-// print all transactions that fit inside the given category
-// @ param stack containing transactions
-// @ param category is the category we want to print all transactions of
-void printContentByCategory(struct stack* stack, int category);
 
 
 #endif

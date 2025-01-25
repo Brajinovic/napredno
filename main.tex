@@ -1,0 +1,502 @@
+\documentclass[12pt, letterpaper]{article}
+\title{Projektna dokumentacija - Implementacija sustava za praćenje osobnih financija}
+\author{Ivan Brajinović}
+\date{25. 01. 2025.}
+\usepackage{graphicx}
+\usepackage{background}
+\usepackage[figurename=Slika]{caption}
+\usepackage[croatian]{babel}
+\usepackage{dirtree}
+
+\usepackage{minted}
+\graphicspath{ {images/} }
+
+% setting the background image, it works, do NOT fucking touch it
+\backgroundsetup{scale=1, angle=0, opacity=0.15,
+contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, xshift=0pt]current page.center)
+{\includegraphics[scale=1.5]{logoFERIT.png}};\end{tikzpicture}}}
+
+\begin{document}
+
+
+	\maketitle
+	\pagenumbering{gobble}
+
+	\newpage
+	\pagenumbering{arabic}
+  \section{Uvod}
+  U sklopu kolegija \textit{Napredno programiranje}, je zadan zadatak \textit{Implementacije sustava za praćenje osobnih financija}. Izgled programa, zatjevi funkcionalnosti te implementacije su od samog početka zadani. U nastavku će biti objašnjene zaglavne datoteke i glavni program.
+
+	\section{Datotečna struktura}
+	Datotečna struktura projekta izgleda ovako:
+  
+  \dirtree{%
+  .1 Makefile.
+  .1 src.
+    .2 include.
+      .3 stack.h.
+      .3 transaction.h.
+    .2 stack.c.
+    .2 main.c.
+  .1 bin.
+  .1 src\_dynamic.
+    .2 include.
+      .3 stack.h.
+      .3 transaction.h.
+    .2 main.c.
+  .1 bin\_dynamic.
+  .1 libstack.so.
+  .1 main.pdf.
+  .1 main.tex.
+  .1 images.
+  }
+
+  Za prevođenje i pokretanje programa, kreiranje dinamičke biblioteke te generiranje pdf dokumentacije se koristi Makefile datoteka.
+  Programski kod i zaglavne datoteke se nalaze u \textit{src} i \textit{src\_dynamic} direktoriima.
+  Izvršni program se nalazi u \textit{bin} i \textit{bin\_dynamic} direkotriima.
+  Direktoriji \textit{src} i \textit{src\_dynamic} su identični. Razlika je u tome što \textit{src} sadržava datoteku \textit{stack.c} dok ne ista u direktoriju \textit{src\_dynamic} uklonjenja kako se koristi dinamička biblioteka \textit{libstack.so}. Isto se odnosi i na \textit{bin} i \textit{bin\_dynamic}.
+
+\section{Direktorij src}
+		
+  \subsection{Zaglavne datoteke}
+  Zaglavne datoteke se nalaze unutar direktorija \textit{include}. U ovom projektu smo napisali 2 zaglavne datoteke:
+  \begin{itemize}
+    \item stack.h
+    \item transaction.h
+  \end{itemize}
+  Izlistaj navedenih zaglavnih datoteka slijedi u nastavku. Datoteke neće bit pojašnjavanje kako su komentari sami po sebi obavili taj posao. Uvijetno uključivanje datoteke i ostale predprocesorske varijable neće biti prikazane.
+  \subsubsection{transaction.h}
+  \begin{minted}[fontsize=\tiny]{c}
+  enum transaction_category
+  {
+    FOOD,
+    UTILITIES,
+    FUN,
+    OTHER
+  };
+
+  struct transaction
+  {
+    float total;
+    enum transaction_category category;
+    int day;
+    int month;
+    char description[50];
+  };
+  \end{minted}
+
+  \subsubsection{stack.h}
+  \begin{minted}[fontsize=\tiny]{c}
+  struct stack
+  {
+    struct transaction** transaction_history;
+    int top;
+    int max_size;
+  };
+
+  // create a stack instance
+  // allocate memory for the transaction_history
+  // set the head
+  // @ returns struct stack* if successful
+  // @ returns FAIL if not
+  struct stack* initialize(void);
+
+  // add a new transaction to the top
+  // increment top index counter
+  // @ returns SUCCESS if successful
+  // @ returns FAIL if not
+  int push(struct transaction* transaction, struct stack* stack);
+
+  // get a pointer to the transaction from the top and delete it from the stack
+  // set the top transaction to the second to last one by decrementing the 
+  // stack->top counter value
+  // @ returns struct transaction* if successful
+  // @ returns FAIL if not
+  struct transaction* pop(struct stack*);
+
+  // get a pointer to the transaction from the top
+  // @ returns struct transaction* if successful
+  // @ return FAIL if not
+  struct transaction* peek(struct stack*);
+
+  // check if the stack is empty
+  // @ returns SUCCESS if stack is empty
+  // @ returns FAIL if not
+  int isEmpty(struct stack* stack);
+
+  // check if the stack is full
+  // @ returns SUCCESS if stack is full
+  // @ returns FAIL if not
+  int isFull(struct stack* stack);
+
+  // prints transaction
+  void printTransaction(struct transaction* transaction);
+
+  // print all contents of the stack
+  void printContent(struct stack*);
+
+  // print all transactions that fit inside the given category
+  // @ param stack containing transactions
+  // @ param category is the category we want to print all transactions of
+  void printContentByCategory(struct stack* stack, int category);
+
+\end{minted}
+  \subsection{Glavni program - main.c}
+  Datoteka \textit{main.c} se sastoji od 3 funkcije:
+  \begin{itemize}
+    \item printMenu()
+    \item printWelcomeScreen()
+    \item main()
+  \end{itemize}
+
+  \subsubsection{printMenu()}
+    Ova funkcija služi kako bi se ispisao izbornik programa. Ne sadrži ništa posebno gledao logike izvršavanja te neće biti posebno objašnjavana. 
+
+  \subsubsection{printWelcomeScreen()}
+    Ova funkcija služi za ispis početke poruke prilikom prvog pokretanja programa. Kao i funkcija \textit{printMenu()}, ne sadrži nikakvu posebnu logiku te neće biti detaljnije opisivana.
+
+  \subsubsection{main()}
+    Glavna funkcija programa. U nastavku slijede manji dijelovi koda od kojih će svaki biti pojašnjen.
+    \begin{minted}[fontsize=\tiny]{c}
+
+    // structure elements
+    float total;
+    int category;
+    int day;
+    int month;
+    char description[50];
+
+    struct stack* stack = initialize();
+    if (stack == NULL)
+    {
+      printf("Stack initialization failed!\n");
+      printf("Exiting program!");
+
+      return FAIL;
+    }
+
+    // array used to store the user input
+    char user_input[100];
+    // variable used for the menu navigation
+    char* menu_index = (char*)malloc(sizeof(char) * 2); 
+    // high impedence, default value
+    if (menu_index == NULL)
+    {
+      printf("Failed to allocate memory for menu_index!\n");
+      return FAIL;
+    }   
+    \end{minted}
+    Početni dio koda koji sadrži deklaracije i definicije varijabli koje će biti korištene tijekom rada programa. Ovdje možemo odmah vidjeti varijable namjenjene za popunjavanje strukture transakcija kao i varijablu \textit{stack} koja predstavlja strukturu podataka koju smo implementirali u projektu. Pored njih, imamo i dvije varijable koje koristimo za pohranu korisničkog unosa, bilo u svrhu navigacije izbornikom ili općenito. Dodatno, za svaki slučaj dinamičke alokacije memorije, provjerava se uspješnost te radnje.
+
+
+  \begin{minted}[fontsize=\tiny]{c}
+  #if DEBUG == 1
+  struct transaction* transaction0 = (struct transaction*)malloc(sizeof(struct transaction));
+  transaction0->total = 10.0;
+  transaction0->category = 0;
+  transaction0->day = 1;
+  transaction0->month = 1;
+  strcpy(transaction0->description, "Lunch.");
+
+  if (push(transaction0, stack) == FAIL)
+  {
+    printf("Failed to push transaction to stack!\n");
+  } else
+  {
+  }
+  #endif
+  \end{minted}
+  Kao pomoć u ispitivanju rada programa su ručno napravljenje transakcije (njih 10) od kojih je samo jedna prikazana kako bi zadržali preglednost čitavog dokumenta. Ostalih 9 izgleda potpuno isto tako da nema potrebe da se sve prikazuju. Nakon što su transakcije kreirane, dodane su na stog pomoću funkcije \textit{push}. Ove ispitne transakcije se mogu isključiti iz programa tako da se unutar zaglavne datoteke \textit{stack.h} vrijednosti konstante \textit{DEBUG} postavi u 0 (nula).
+
+
+  \begin{minted}[fontsize=\tiny]{c}
+  printWelcomeScreen();
+  while(1)
+  \end{minted}
+  Nakon ispitnih transakcija ispisujemo početnu poruku programa te ulazimo u beskonačnu petlju gdje će program provesti ostatak vremena.
+  \begin{minted}[fontsize=\tiny]{c}
+  do
+  {
+    printMenu();
+    fgets(menu_index, 2, stdin);
+    while(getchar() != '\n');
+    // 0 - 48
+    // 7 - 55
+    // c - 99
+  // if the input is outside of the allowed range, repeat the entry
+  } while (!(menu_index[0] >= 48 && (menu_index[0] <= 55) || (menu_index[0] == 99)));
+  \end{minted}
+  Generična funkcija korisničkog unosa podataka. Svaka od nih ima neku poruku na početku koja korisnika navodi na očekivani unos. Nakon toga se obrađuje korisnički unos na način da se miču neželjeni znakovi ili se unos koji je znak pretvara u broj (cijeli ili decimalan) pomoću funkcija \textit{atoi} i \textit{atof}. U ovom primjeru te dvije funkcije nisu korištene kako je moguće na osnovu ovog primjera iz koda zaključiti kako se radi o korisničkom unosu. Na kraju vidimo određene uvijete kojima zapravo zadajemo dozvoljeni korisnički unos.
+  
+
+  \begin{minted}[fontsize=\tiny]{c}
+    if (menu_index[0] == '0')
+    {
+      ... unos korisničkih podataka ...
+
+      other_transaction = (struct transaction*)malloc(sizeof(struct transaction));
+      other_transaction->total = total;
+      other_transaction->category = category;
+      other_transaction->day = day;
+      other_transaction->month = month;
+      strcpy(other_transaction->description, description);
+
+      if (push(other_transaction, stack) == FAIL)
+      {
+        printf("Failed to push transaction to stack!\n");
+      } else
+      {
+      }
+    }
+  \end{minted}
+  Slučaj kada se stvara nova transakcija, korisnički unos 0 (nula). Od korisnika se traži unos za svaki od elemenata strukture transakcije te se nakon unosa ista pohranjuje u memoriju. Nakon što se pohrani, pokazivač na strukturu se pohrani u stog.
+
+  \begin{minted}[fontsize=\tiny]{c}
+  else if (menu_index[0] == '1')
+  {
+    printf(" Chosen option: 1 - delete last transaction.\n");
+    pop(stack);
+  }
+  \end{minted}
+  U slučaju kada je korisnik unio 1 (jedan), zadnja unešena struktura se briše i miče sa stoga.
+  
+  \begin{minted}[fontsize=\tiny]{c}
+  else if (menu_index[0] == '2')
+  {
+    printf(" Chosen option: 2 - check last transaction.\n");
+    printTransaction(peek(stack));
+  }  
+  \end{minted}
+  U slučaju da je korisnik unio 2 (dva), ispisuje se sadržaj zadnje unešene strukture.
+
+
+  \begin{minted}[fontsize=\tiny]{c}
+  else if (menu_index[0] == '3')
+  {
+    printf(" Chosen option: 3 - transaction history overview.\n");
+    printContent(stack);
+
+  }     
+  \end{minted}
+  U slučaju da je korisnik unio 3 (tri), ispisuje se sadržaj svih transakcija.
+
+  \begin{minted}[fontsize=\tiny]{c}
+  else if (menu_index[0] == '4')
+  {
+    do
+    {
+      printf(" Chosen option: 4 - browse by category.\n");
+      printf("Enter search categoriy: \n");
+      printf(" 0 - FOOD\n");
+      printf(" 1 - UTILITIES\n");
+      printf(" 2 - FUN\n");
+      printf(" 3 - OTHER\n");
+      
+      // read the input as a string
+      fgets(user_input, 100, stdin);
+      while(getchar() != '\n');
+      category = atoi(user_input);
+      // atof converts string to float if valid input
+      // otherwise it returns 0.0
+    }while(!(category >= 0 && category <= 3));
+    // print all transactions with that categoriy
+    printContentByCategory(stack, category);
+
+  }
+  \end{minted}
+  U slučaju da je korisnik unio 4 (četri), transakcije se ispisuju obzirom na pripadajuću kategoriju. Funkcija \textit{printContentByCategoriy} sadrži kod u kojem se prolazi kroz sve transakcije čiji pokazivači se nalaze na stogu. Za svaku transakciju se provjerava da li pripadata odabranoj kategoriji, te ukoliko pripada, sadržaj transakcije se ispisuje.
+  
+
+  \begin{minted}[fontsize=\tiny]{c}
+  else if (menu_index[0] == '5')
+  {
+    int month = 0;
+    double sum_fun = 0.0;
+    double sum_utilities = 0.0;
+    double sum_food = 0.0;
+    double sum_other = 0.0;
+
+    printf(" Chosen option: 5 - monthly cost summary.\n");
+    do
+    {
+      printf(" Enter a number between 1 and 12 representing the month of interest: \n");
+
+      // read the input as a string
+      fgets(user_input, 100, stdin);  
+
+      // atof converts string to float if valid input
+      // otherwise it returns 0.0
+      month = atoi(user_input);
+
+    }while(!(month >= 1 && month <= 12));
+
+    int index = 0;
+    // search through all of the transactions
+    // sum the costs by category for the given month
+    while ( index < stack->top)
+    {
+      if ( stack->transaction_history[index]->month == month)
+      {
+        int cost_category = stack->transaction_history[index]->category;
+        if (  cost_category == 0)
+        {
+          sum_food += stack->transaction_history[index]->total;
+        } else if ( cost_category == 1)
+        {
+          sum_utilities += stack->transaction_history[index]->total;
+        } else if (cost_category == 2)
+        {
+          sum_fun += stack->transaction_history[index]->total;
+        } else
+        {
+          sum_other += stack->transaction_history[index]->total;
+        }
+      }
+      index = index + 1;
+    }
+    printf(" Cost summary for the month: %d\n", month);
+    printf("\tCategory FOOD: %.2f\n", sum_food);
+    printf("\tCategory UTILITIES: %.2f\n", sum_utilities);
+    printf("\tCategory FUN: %.2f\n", sum_fun);
+    printf("\tCategory OTHER: %.2f\n\n\n", sum_other);
+    // based on the user input (months)
+    // calculate the sum of costs for each category
+  }
+  \end{minted}
+  U slučaju da je korisnik unio 5 (pet), vrši se mjesečni obračun po kategorijama za odabrani mjesec. Prolazi se kroz svaku od transakcija te se gleda pripada li odabranom mjesecu. Ukoliko pripada, brojač za pripadajuću kategoriju se uvećava za iznos transakcije. Na kraju slijedi ispis svih brojača.
+
+
+  \begin{minted}[fontsize=\tiny]{c}
+  else if (menu_index[0] == '6')
+  {
+    int browse_option;
+    int day;
+    int month;
+    
+    do
+    {
+      // the user should be able to browse the transactions
+      // based on day (1-31) and/or month (12)
+      // select one of the two options
+      printf(" Chosen option: 6 - Date based transaction browser.\n");
+      printf(" Enter 0 if you want to browse transactions based on the day.\n");
+      printf(" Enter 1 if you want to browse transactions based on the day and month.\n");
+      // read the input as a string
+      fgets(user_input, 100, stdin);
+      browse_option = atoi(user_input);
+      // atof converts string to float if valid input
+      // otherwise it returns 0.0
+    }while(!(browse_option >= 0 && browse_option <= 1));
+
+    if ( browse_option == 0)
+    {
+      do
+      {
+        printf(" Chosen option: Browse by day!\n");
+        printf(" Enter a number between 1 and 31.\n");
+        
+        // read the input as a string
+        fgets(user_input, 100, stdin);
+        day = atoi(user_input);
+        // atof converts string to float if valid input
+        // otherwise it returns 0.0
+      }while(!(day >= 1 && day <= 31));
+
+      printf("Search criteria: \n"),
+      printf("\tDay: %d\n\n", day);
+
+      int index = 0;
+      while ( index <= stack->top )
+      {
+        if (stack->transaction_history[index]->day == day)
+        {
+          printTransaction(stack->transaction_history[index]);
+        }
+        index = index + 1;
+      }
+    } else
+    {
+      do
+      {
+        printf(" Chosen option: Browse by day and month!\n");
+        printf(" Enter a number between 1 and 31.\n");
+        // read the input as a string
+        fgets(user_input, 100, stdin);
+        day = atoi(user_input);
+        // atof converts string to float if valid input
+        // otherwise it returns 0.0
+      }while(!(day >= 1 && day <= 31));
+
+      do
+      {
+        printf(" Enter a number between 1 and 12.\n");
+        // read the input as a string
+        fgets(user_input, 100, stdin);      
+        month = atoi(user_input);
+        // atof converts string to float if valid input
+        // otherwise it returns 0.0
+      }while(!(month >= 1 && month <= 12));
+
+      printf("Search criteria: \n"),
+      printf("\tDay: %d\n", day);
+      printf("\tMonth: %d\n\n", month);
+
+      int index = 0;
+      while ( index <= stack->top )
+      {
+        if (stack->transaction_history[index]->day == day && stack->transaction_history[index]->month == month)
+        {
+          printTransaction(stack->transaction_history[index]);
+        }
+        index = index + 1;
+      }
+
+    }
+  }   
+  \end{minted}
+  U slučaju da je korisnik unio 6 (šest), ispisuju se transakcije obzirom na dan i/ili mjesec stvaranja. Ukoliko se unese 0 (nula), transakcije se ispisuju obzirom na dan koji je unešen (ponovo novi unos, prvo korisnik unese 6, pa 0, pa sad dan). Ukoliko se unese 1 (jedan), transakcije se ispisuju obzirom na dan i mjesec koji je unešen.
+  
+
+  \begin{minted}[fontsize=\tiny]{c}
+  else if (menu_index[0] == '7')
+  { 
+    break;
+  } 
+  \end{minted}
+  U slučaju da korisnik unese 7 (sedam), program prekida sa radom.
+
+  \begin{minted}[fontsize=\tiny]{c}
+  else if (menu_index[0] == 'c')
+  {
+    printf("Press \"c\" to print out the menu.");
+    printMenu();
+  }
+  \end{minted}
+  U slučaju da korisnik unese c (slovo c), ispisujese se izbornik.
+
+  \begin{minted}[fontsize=\tiny]{c}
+  printf("To show the menu, press \"c\".\n");
+  // reset input
+  menu_index[0] = 'z';
+  \end{minted}
+  Na kraju beskonačne petlje se ispisuje prikazana poruka i varijabla \textit{menu\_index} se postavi na vrijednost slova z kao neaktivno stanje.
+
+\section{Direktorij bin}
+  U ovom direktoriju se nalaze izvršne datoteke koje se stvore korištenjem naredbi iz \textit{Makefile} datoteke.
+
+\section{Makefile}
+  Za prevođenje i pokretanje programa bez dinamičke biblioteke: 
+  \begin{minted}[fontsize=\tiny]{shell}
+  make compile
+  \end{minted}
+
+  Za prevođenje i pokretanje programa sa dinamičkom bibliotekom: 
+  \begin{minted}[fontsize=\tiny]{shell}
+  make dynamic_lib # stvaranje dinamičke biblioteke
+  export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH # zapiši putanju do biblioteke u varijablu okruženja
+  make compile_dynamic # prevođenje programa uz dinamičku biblioteku
+  \end{minted}
+
+
+  
+\end{document}

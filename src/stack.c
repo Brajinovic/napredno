@@ -9,15 +9,15 @@ struct stack* initialize(void)
 	if (stack == NULL)
 	{
 		printf("Stack initialization failed!\n");
-		return FAIL;
+		return NULL;
 	}
 	stack->top = -1;
 	stack->max_size = STACK_SIZE;
-	stack->transaction_history = (struct transaction*)malloc(sizeof(struct transaction*) * stack->max_size);
+	stack->transaction_history = (struct transaction**)malloc(sizeof(struct transaction*) * stack->max_size);
 	if (stack->transaction_history == NULL)
 	{
 		printf("Stack buffer initialization failed!\n");
-		return FAIL;
+		return NULL;
 	}
 	return stack;
 }
@@ -56,7 +56,7 @@ struct transaction* pop(struct stack* stack)
 	if (stack == NULL)
 	{
 		printf("Stack not allocated!");
-		return FAIL;
+		return NULL;
 	}
 	if (isEmpty(stack) == FAIL)
 	{	
@@ -70,7 +70,7 @@ struct transaction* pop(struct stack* stack)
 		// nothing to pop, stack is empty
 		printf("Stack is empty, nothing to pop!\n");
 
-		return FAIL;
+		return NULL;
 	}
 }
 
@@ -85,7 +85,7 @@ struct transaction* peek(struct stack* stack)
 			}
 	}
 	
-	return FAIL;
+	return NULL;
 }
 
 int isEmpty(struct stack* stack)
@@ -124,7 +124,7 @@ int isFull(struct stack* stack)
 
 void printTransaction(struct transaction* transaction)
 {
-	printf("\t Total: %f", transaction->total);
+	printf("\t Total: %.2f", transaction->total);
 	printf("\t Category: %d", transaction->category);
 	printf("\t Day: %d", transaction->day);
 	printf("\t Month: %d", transaction->month);
@@ -134,11 +134,6 @@ void printTransaction(struct transaction* transaction)
 
 void printContent(struct stack* stack)
 {
-	if (stack == NULL)
-	{
-		printf("Stack not allocated!");
-		return FAIL;
-	}
 	if (isEmpty(stack) == SUCCESS)
 	{
 		printf("Stack is empty! Nothing to do!");
@@ -156,11 +151,6 @@ void printContent(struct stack* stack)
 
 void printContentByCategory(struct stack* stack, int category)
 {
-	if (stack == NULL)
-	{
-		printf("Stack not allocated!");
-		return FAIL;
-	}
 	if (isEmpty(stack) == SUCCESS)
 	{
 		printf("Stack is empty! Nothing to do!");

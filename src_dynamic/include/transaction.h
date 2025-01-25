@@ -13,7 +13,6 @@ enum transaction_category
 	OTHER
 };
 
-
 struct transaction
 {
 	float total;
