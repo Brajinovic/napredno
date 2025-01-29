@@ -1,12 +1,20 @@
 \documentclass[12pt, letterpaper]{article}
 \title{Projektna dokumentacija - Implementacija sustava za praćenje osobnih financija}
 \author{Ivan Brajinović}
-\date{25. 01. 2025.}
+\date{29. 01. 2025.}
 \usepackage{graphicx}
 \usepackage{background}
 \usepackage[figurename=Slika]{caption}
 \usepackage[croatian]{babel}
 \usepackage{dirtree}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    }
 
 \usepackage{minted}
 \graphicspath{ {images/} }
@@ -24,10 +32,28 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
 
 	\newpage
 	\pagenumbering{arabic}
-  \section{Uvod}
-  U sklopu kolegija \textit{Napredno programiranje}, je zadan zadatak \textit{Implementacije sustava za praćenje osobnih financija}. Izgled programa, zahtjevi funkcionalnosti te implementacije su od samog početka zadani. U nastavku će biti objašnjene zaglavne datoteke i glavni program.
+  \section{Uvod} \label{uvod}
+  U sklopu kolegija \textit{Napredno programiranje}, je zadan zadatak \textit{Implementacije sustava za praćenje osobnih financija}. Izgled programa, zahtjevi funkcionalnosti te implementacije su od samog početka zadani te su zapisani u \textit{readme.md} datoteci te samo spomenuti u nastavku dokumenta. Problem koji se rješava ovom aplikacijom je praćenje osobnih transakcija s obzirom na datum uspostave transakcije te pripadne kategorije transakcije. 
 
-	\section{Datotečna struktura}
+  \section{Opis projekta}
+  \subsubsection{Struktura podataka}
+  Kao struktura za pohranu podataka se koristi stog. Nakon što su implementirane osnovne metode, kreirana je dinamička biblioteka .so nastavka. Izgled sučelja dinamičke biblioteke je prikazan pod dijelom \textit{Zaglavne datoteke}, \hyperref[stack.h]{stack.h}.
+
+  \subsubsection{Glavna aplikacija}
+  Glavna aplikacija rješava problem opisan u \hyperref[uvod]{uvodu}. Točni zahtjevi se vide u podnaslovu \hyperref[funkcionalnost]{Funkcionalnosti}. Korištena je već spomenuta dinamička biblioteka te \hyperref[struct_transaction]{struktura transakcije} koja predstavlja jednu transakciju. Konkretan kod je predstavljen i opisan dalje u dokumentu.
+
+  \subsection{Funkcionalnosti} \label{funkcionalnost}
+  \begin{itemize}
+    \item Dodavanje nove transakcije
+    \item Poništavanje zadnje transakcije
+    \item Pregled zadnje transakcije
+    \item Ispis svih transakcija
+    \item Dodatno - Pregled po kategorijama
+    \item Dodatno - Mjesečni izvještaj troškova
+    \item Dodatno - Pretraživanje transakcija (po danu i/ili mjesecu)
+  \end{itemize}
+
+	\subsection{Datotečna struktura}
 	Datotečna struktura projekta izgleda ovako:
   
   \dirtree{%
@@ -56,7 +82,7 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
   Izvršni program se nalazi u \textit{bin} i \textit{bin\_dynamic} direktorijima.
   Direktoriji \textit{src} i \textit{src\_dynamic} su identični. Razlika je u tome što \textit{src} sadržava datoteku \textit{stack.c} dok ne ista u direktoriju \textit{src\_dynamic} uklonjena kako se koristi dinamička biblioteka \textit{libstack.so}. Isto se odnosi i na \textit{bin} i \textit{bin\_dynamic}.
 
-\section{Direktorij src}
+\subsection{Direktorij src}
 		
   \subsection{Zaglavne datoteke}
   Zaglavne datoteke se nalaze unutar direktorija \textit{include}. U ovom projektu smo napisali 2 zaglavne datoteke:
@@ -65,7 +91,7 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
     \item transaction.h
   \end{itemize}
   Izlistaj navedenih zaglavnih datoteka slijedi u nastavku. Datoteke neće biti pojašnjavanje kako su komentari sami po sebi obavili taj posao. Uvjetno uključivanje datoteke i ostale pretprocesorske varijable neće biti prikazane.
-  \subsubsection{transaction.h}
+  \subsubsection{transaction.h} \label{struct_transaction}
   \begin{minted}[fontsize=\tiny]{c}
   enum transaction_category
   {
@@ -84,8 +110,9 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
     char description[50];
   };
   \end{minted}
+  Zaglavna datoteka koja sadržava strukturu transakcije.
 
-  \subsubsection{stack.h}
+  \subsubsection{stack.h} \label{stack.h}
   \begin{minted}[fontsize=\tiny]{c}
   struct stack
   {
@@ -140,7 +167,9 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
   // @ param category is the category we want to print all transactions of
   void printContentByCategory(struct stack* stack, int category);
 
-\end{minted}
+  \end{minted}
+  Zaglavlje dinamičke biblioteke, opisuje sučelje za korištenje navedene biblioteke. Čitava biblioteka ovisi o zaglavnoj datoteci \hyperref[struct_transaction]{transaction.h}.
+
   \subsection{Glavni program - main.c}
   Datoteka \textit{main.c} se sastoji od 3 funkcije:
   \begin{itemize}
@@ -205,6 +234,7 @@ contents={\begin{tikzpicture}[remember picture, overlay] \node at ([yshift=0pt, 
   }
   #endif
   \end{minted}
+
   Kao pomoć u ispitivanju rada programa su ručno napravljene transakcije (njih 10) od kojih je samo jedna prikazana kako bi zadržali preglednost čitavog dokumenta. Ostalih 9 izgleda potpuno isto tako da nema potrebe da se sve prikazuju. Nakon što su transakcije kreirane, dodane su na stog pomoću funkcije \textit{push}. Ove ispitne transakcije se mogu isključiti iz programa tako da se unutar zaglavne datoteke \textit{stack.h} vrijednosti konstante \textit{DEBUG} postavi u 0 (nula).
 
   \begin{minted}[fontsize=\tiny]{c}
@@ -479,22 +509,44 @@ U slučaju kada je korisnik unio 1 (jedan), zadnja unesena struktura se briše i
   \end{minted}
   Na kraju beskonačne petlje se ispisuje prikazana poruka i varijabla \textit{menu\_index} se postavi na vrijednost slova z kao neaktivno stanje.
 
-\section{Direktorij bin}
-  U ovom direktoriju se nalaze izvršne datoteke koje se stvore korištenjem naredbi iz \textit{Makefile} datoteke.
+  \section{Direktorij bin}
+    U ovom direktoriju se nalaze izvršne datoteke koje se stvore korištenjem naredbi iz \textit{Makefile} datoteke.
 
-\section{Makefile}
-  Za prevođenje i pokretanje programa bez dinamičke biblioteke: 
-  \begin{minted}[fontsize=\tiny]{shell}
+  \section{Instalacija i pokretanje}
+
+  \subsection{Preuzimanje projekta}
+  Projekt se nalazi na adresi \href{https://github.com/Brajinovic/napredno}{https://github.com/Brajinovic/napredno}. Isti je potrebno preuzeti, sa grane \textit{master}. Npr. s pomoću \textit{Git} naredbe: 
+    
+  \begin{minted}{shell}
+    git clone https://github.com/Brajinovic/napredno.git
+  \end{minted}
+
+  Nakon što je program preuzet, potrebno je otvoriti naredbedbeni redak u preuzetom direktoriju. U nastavku su opisane dvije opcije pokretanja aplikacije. Za \textit{Linux} operacijske sustave nisu potrebne nikakve dodatne instalacije kako se koristi \textit{GNU gcc} prevoditelj koji dođe već instaliran.
+    
+  Za prevođenje i pokretanje programa bez dinamičke biblioteke (koriste se src i bin direktoriji): 
+  \begin{minted}{shell}
   make compile
   \end{minted}
 
-  Za prevođenje i pokretanje programa s dinamičkom bibliotekom: 
-  \begin{minted}[fontsize=\tiny]{shell}
-  make dynamic_lib # stvaranje dinamičke biblioteke
-  export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH # zapiši putanju do biblioteke u varijablu okruženja
-  make compile_dynamic # prevođenje programa uz dinamičku biblioteku
+  Za prevođenje i pokretanje programa s dinamičkom bibliotekom (koriste se src\_dynamic i bin\_dynamic direktoriji): 
+
+  \begin{minted}{shell}
+  make dynamic_lib
+  export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH 
+  make compile_dynamic
   \end{minted}
 
-
+  \section{Tehnički detalji}
   
+  \subsection{Opis podataka}
+  Osnovni podatak je transakcija. Ovaj podatak je opisan strukturom \textit{transaction} koja je definirana u datoteci \hyperref[struct_transaction]{transaction.h}. Transakcije se pohranjuju u strukture podataka koje se zovu stogovi. Stog je definiran u dinamičkoj biblioteci \textit{libstack.so} čije se sučelje može vidjeti u \hyperref[stack.h]{zaglavnoj datoteci}. 
+ 
+  \subsection{Glavne funkcije} 
+  Glavna funkcija \textit{main()} se koristi kao pokretač i korisnik svih ostalih funkcija. Tu ponajprije spada funkcionalnost izbornika koja sama po sebi ne ovisi o drugim funkcijama, međutim funkcionalnosti koje se kroz izbornik pružaju koriste funkcije definirane u biblioteci \textit{libstack.so}.
+
+  \section{Zaključak}
+  Kroz ovaj kratki projekt je predstavljen koncept rješavanja problema praćenja osobnih transakcija. Korištena je općenita struktura stoga kao medij za pohranu korisničkih podataka, koji je samostalno implementiran te se nisu razmatrale druge mogućnosti i rješenja. Ovo rješenje pruža pohranu, pregled i brisanje transakcija ali ne na optimalan način. Prvi korak ka poboljšanju bi bilo odabir neke pogodnije strukture podataka za pohranu kao što su na primjer \textit{skip liste} koje omogućavaju brži način pretrage transakcija. Također nema nikakav mehanizam sigurnosne pohrane, tako da ako slučajno izađemo iz aplikacije, nema nikakvih mogućnosti povratka unesenih informacija tako da bi trebalo unesene podatke pohraniti u neku bazu podataka te tako riješiti taj nedostatak. Sve u svemu, ovaj projekt služi kao zgodan početni zadatak kako bi se primijenile stvari spomenute na predavanjima li se svakako nalazi daleko od gotovog komercijalnog proizvoda.
+
 \end{document}
+
+% powered by Desetka & Maxinger
